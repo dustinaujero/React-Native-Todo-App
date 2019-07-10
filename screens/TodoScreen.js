@@ -1,6 +1,6 @@
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
-
+import { bindActionCreators } from 'redux';
 import {connect} from 'react-redux';
 
 import {
@@ -8,20 +8,58 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
+  FlatList,
+  ActivityIndicator,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 
 import { MonoText } from '../components/StyledText';
+import { fetchTodos } from '../app/actions/todoActions';
 
-export default class TodosScreen extends React.Component {
+class TodosScreen extends React.Component {
 
   constructor(props) {
     super(props);
-  }
 
+    this.renderItem = this.renderItem.bind(this);
+  }
+  componentDidMount() {
+    this.props.fetchTodos();
+  }
+  renderItem({ item, index }) {
+    return (
+      <View style={styles.row}>
+        <Text style={styles.title}>
+          {(parseInt(index) + 1)}{". "}{item.title}
+        </Text>
+        <Text style={styles.description}>
+          {item.description}
+        </Text>
+      </View>
+    )
+  }
   render() {
+    if (this.props.loading) {
+      return (
+        <View style={styles.activityIndicatorContainer}>
+          <ActivityIndicator animating={true} />
+        </View>
+      );
+    } else {
+      return (
+        // <View style={styles.container}>
+        <View style={{ flex: 1, backgroundColor: '#F5F5F5', paddingTop: 20 }}>
+          <FlatList
+                ref='listRef'
+                data={this.props.todos}
+                renderItem={this.renderItem}
+                keyExtractor={(item, index) => `${index}`} />
+        </View>
+        // </View>
+      );
+    }
     return (
       <View style={styles.container}>
         <ScrollView
@@ -41,7 +79,7 @@ export default class TodosScreen extends React.Component {
           <View style={styles.getStartedContainer}>
 
             <Text style={styles.getStartedText}>Get started by opening</Text>
-
+              
             <View
               style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
               <MonoText>screens/HomeScreen.js</MonoText>
@@ -78,9 +116,26 @@ export default class TodosScreen extends React.Component {
 
 TodosScreen.navigationOptions = {
   header: null,
+  title: 'app.json'
 };
+// function mapStateToProps(state, props) {
+//   return {
+//     loading: state.dataReducer.loading,
+//     data: state.dataReducer.data
+//   }
+// }
+// function mapDispatchToProps(dispatch) {
+//   return bindActionCreators(Actions, dispatch);
+// }
 
-
+const msp = (state) => ({
+  loading: state.todos.loading,
+  todos: state.todos.todos
+})
+const mdp = (dispatch) => ({
+  fetchTodos: () => dispatch(fetchTodos())
+})
+export default connect(msp, mdp)(TodosScreen);
 
 const styles = StyleSheet.create({
   container: {
@@ -169,4 +224,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#2e78b7',
   },
+  activityIndicatorContainer: {
+    backgroundColor: "#fff",
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  row: {
+    borderBottomWidth: 1,
+    borderColor: "#ccc",
+    padding: 10
+  },
+  title: {
+    fontSize: 15,
+    fontWeight: "600"
+  },
+  description: {
+    marginTop: 5,
+    fontSize: 14,
+  }
 });
