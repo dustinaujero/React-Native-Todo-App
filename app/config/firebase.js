@@ -1,15 +1,17 @@
-import * as firebase from 'firebase';
+// import firebase from 'firebase';
+// var firebaseConfig = {
+//     apiKey: "AIzaSyDHc0SEjzsL7bjcomU3xDeJacqlUIXHJkU",
+//     authDomain: "todo-d1cc4.firebaseapp.com",
+//     databaseURL: "https://todo-d1cc4.firebaseio.com",
+//     projectId: "todo-d1cc4",
+//     storageBucket: "todo-d1cc4.appspot.com",
+//     messagingSenderId: "929181652003",
+//     appId: "1:929181652003:web:d72f715162678db3"
+// };
 
-const config = {
-    apiKey: "AIzaSyCoIxc_K2Dop9VMXS4B6qhBUyDnuQBQ33c",
-    authDomain: "blockrunner-8c971.firebaseapp.com",
-    databaseURL: "https://blockrunner-8c971.firebaseio.com",
-    projectId: "blockrunner-8c971",
-    storageBucket: "blockrunner-8c971.appspot.com",
-    messagingSenderId: "1032613884407"
-};
-
-firebase.initializeApp(config);
-
-export const database = firebase.database();
-export const storage = firebase.storage();
+// if (!firebase.apps.length) {
+//     firebase.initializeApp(config);
+// }
+// export const fb = firebase.initializeApp(firebaseConfig);
+// export const database = firebase.database();
+// export const storage = firebase.storage();

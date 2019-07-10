@@ -14,9 +14,55 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {
+  Container, 
+  Content, 
+  Header, 
+  Form,
+  Input,
+  Item, 
+  Button, 
+  Label
+} from 'native-base';
 
 import { MonoText } from '../components/StyledText';
 import { fetchTodos } from '../app/actions/todoActions';
+
+// import firebase from 'firebase';
+// require('firebase/database');
+// var config = {
+//   apiKey: "AIzaSyDHc0SEjzsL7bjcomU3xDeJacqlUIXHJkU",
+//   authDomain: "todo-d1cc4.firebaseapp.com",
+//   databaseURL: "https://todo-d1cc4.firebaseio.com",
+//   projectId: "todo-d1cc4",
+//   storageBucket: "todo-d1cc4.appspot.com",
+//   messagingSenderId: "929181652003",
+//   appId: "1:929181652003:web:d72f715162678db3"
+// };
+
+// if (!firebase.apps.length) {
+//   firebase.initializeApp(config);
+// }
+// export const fb = firebase.initializeApp(firebaseConfig);
+// export const database = firebase.database();
+// export const storage = firebase.storage();
+
+import firebase from 'firebase';
+require('firebase/database');
+var config = {
+  apiKey: "AIzaSyDHc0SEjzsL7bjcomU3xDeJacqlUIXHJkU",
+  authDomain: "todo-d1cc4.firebaseapp.com",
+  databaseURL: "https://todo-d1cc4.firebaseio.com",
+  projectId: "todo-d1cc4",
+  storageBucket: "todo-d1cc4.appspot.com",
+  messagingSenderId: "929181652003",
+  appId: "1:929181652003:web:d72f715162678db3"
+};
+let database;
+if (!firebase.apps.length) {
+  database = firebase.initializeApp(config);
+}
+
 
 class TodosScreen extends React.Component {
 
@@ -27,6 +73,21 @@ class TodosScreen extends React.Component {
   }
   componentDidMount() {
     this.props.fetchTodos();
+    console.log("hello");
+    function writeUserData(email, fname, lname) {
+      firebase.database().ref('Users/').set({
+        email,
+        fname,
+        lname
+      }).then((data) => {
+        //success callback
+        console.log('data ', data)
+      }).catch((error) => {
+        //error callback
+        console.log('error ', error)
+      })
+    }
+    writeUserData("email", "fname", "lname");
   }
   renderItem({ item, index }) {
     return (
@@ -38,6 +99,13 @@ class TodosScreen extends React.Component {
           {item.description}
         </Text>
       </View>
+    )
+  }
+  render1() {
+    return (
+      <Container style={styles.container}>
+
+      </Container>
     )
   }
   render() {
@@ -60,6 +128,8 @@ class TodosScreen extends React.Component {
         // </View>
       );
     }
+  }
+  render1() {
     return (
       <View style={styles.container}>
         <ScrollView
@@ -112,21 +182,14 @@ class TodosScreen extends React.Component {
       </View>
     );
   }
+    
+  
 }
 
 TodosScreen.navigationOptions = {
   header: null,
   title: 'app.json'
 };
-// function mapStateToProps(state, props) {
-//   return {
-//     loading: state.dataReducer.loading,
-//     data: state.dataReducer.data
-//   }
-// }
-// function mapDispatchToProps(dispatch) {
-//   return bindActionCreators(Actions, dispatch);
-// }
 
 const msp = (state) => ({
   loading: state.todos.loading,
