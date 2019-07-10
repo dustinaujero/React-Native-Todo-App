@@ -1,6 +1,6 @@
 export const RECEIVE_TODOS = "RECEIVE_TODOS";
 
-import Data from '../sample.json';
+import Data from '../../assets/sample.json';
 
 export const receiveTodos = (todos) => (
     {
