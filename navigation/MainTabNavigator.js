@@ -12,14 +12,14 @@ const config = Platform.select({
   default: {},
 });
 
-const TodosStack = createStackNavigator(
+const TodoStack = createStackNavigator(
   {
     Todo: TodoScreen,
   },
   config
 );
 
-TodosStack.navigationOptions = {
+TodoStack.navigationOptions = {
   tabBarLabel: 'Todos',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
@@ -33,7 +33,7 @@ TodosStack.navigationOptions = {
   ),
 };
 
-TodosStack.path = '';
+TodoStack.path = '';
 
 const LinksStack = createStackNavigator(
   {
@@ -68,7 +68,7 @@ SettingsStack.navigationOptions = {
 SettingsStack.path = '';
 
 const tabNavigator = createBottomTabNavigator({
-  TodosStack,
+  TodoStack,
   LinksStack,
   SettingsStack,
 });

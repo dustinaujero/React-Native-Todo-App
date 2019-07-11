@@ -2,7 +2,6 @@ import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import {connect} from 'react-redux';
-
 import {
   Image,
   Platform,
@@ -11,8 +10,11 @@ import {
   FlatList,
   ActivityIndicator,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
+  StatusBar,
+  ListView
 } from 'react-native';
 import {
   Container, 
@@ -22,32 +24,17 @@ import {
   Input,
   Item, 
   Button, 
-  Label
+  Label,
+  Icon,
+  List, 
+  ListItem
 } from 'native-base';
-
 import { MonoText } from '../components/StyledText';
-import { fetchTodos } from '../app/actions/todoActions';
+import { fetchTodos, createTodo } from '../app/actions/todoActions';
 
-// import firebase from 'firebase';
-// require('firebase/database');
-// var config = {
-//   apiKey: "AIzaSyDHc0SEjzsL7bjcomU3xDeJacqlUIXHJkU",
-//   authDomain: "todo-d1cc4.firebaseapp.com",
-//   databaseURL: "https://todo-d1cc4.firebaseio.com",
-//   projectId: "todo-d1cc4",
-//   storageBucket: "todo-d1cc4.appspot.com",
-//   messagingSenderId: "929181652003",
-//   appId: "1:929181652003:web:d72f715162678db3"
-// };
-
-// if (!firebase.apps.length) {
-//   firebase.initializeApp(config);
-// }
-// export const fb = firebase.initializeApp(firebaseConfig);
-// export const database = firebase.database();
-// export const storage = firebase.storage();
 
 import firebase from 'firebase';
+
 require('firebase/database');
 var config = {
   apiKey: "AIzaSyDHc0SEjzsL7bjcomU3xDeJacqlUIXHJkU",
@@ -58,36 +45,46 @@ var config = {
   messagingSenderId: "929181652003",
   appId: "1:929181652003:web:d72f715162678db3"
 };
-let database;
 if (!firebase.apps.length) {
-  database = firebase.initializeApp(config);
+  firebase.initializeApp(config);
 }
 
 
-class TodosScreen extends React.Component {
+class UsersScreen extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      title: "",
+      description: ""
+    }
+    this.lv = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2});
 
     this.renderItem = this.renderItem.bind(this);
   }
   componentDidMount() {
     this.props.fetchTodos();
-    console.log("hello");
-    function writeUserData(email, fname, lname) {
-      firebase.database().ref('Users/').set({
-        email,
-        fname,
-        lname
-      }).then((data) => {
-        //success callback
-        console.log('data ', data)
-      }).catch((error) => {
-        //error callback
-        console.log('error ', error)
-      })
+    // firebase.database().ref('Todos/').on('child_added', data => {
+    //   this.props.receiveTodo(data.val().title);
+    // })
+    // function writeUserData(title, description) {
+    //   firebase.database().ref('Todos/').push({
+    //     title,
+    //     description
+    //   }).then((data) => {
+    //     //success callback
+    //     console.log('data ', data)
+    //   }).catch((error) => {
+    //     //error callback
+    //     console.log('error ', error)
+    //   })
+    // }
+    // writeUserData("Walk dog", "walk maya around the park");
+  }
+  addTodo() {
+    if (this.state.title.length >= 1) {
+      this.props.createTodo(this.state.title);
     }
-    writeUserData("email", "fname", "lname");
   }
   renderItem({ item, index }) {
     return (
@@ -101,14 +98,60 @@ class TodosScreen extends React.Component {
       </View>
     )
   }
-  render1() {
+  render() {
     return (
       <Container style={styles.container}>
+        <Header transparent style={{ marginTop: StatusBar.currentHeight }}>
+          <Content>
+            <Item>
+              {/* <Input style={styles.inputTextField} 
+                placeholder='Enter new todo'
+              /> */}
+              <Input style={styles.inputTextField}
+                keyboardType='default'
+                placeholder='Enter new todo'
+                onChangeText={
+                  (text) => {
+                    this.setState({ title: text });
+                  }
+                }
+                value={this.state.title}
+              />
+              <Button onPress={() =>  this.addTodo()}>
+                <Icon name="add" />
+              </Button>
+            </Item>
+          </Content>
+        </Header>
 
+        <Content>
+          <List 
+            dataSource={this.lv.cloneWithRows(this.props.todos)}
+            renderRow={todo => 
+              <ListItem>
+                <Text>{todo.title}</Text>
+              </ListItem>
+            }
+            renderLeftHiddenRow={todo => 
+              <Button full>
+                <Icon name="information-circle" />
+              </Button>
+            }
+            renderRightHiddenRow={todo =>
+              <Button full danger>
+                <Icon name="trash" />
+              </Button>
+            }
+
+            leftOpenValue={-75}
+            rightOpenValue={-75}
+          />
+
+        </Content>
       </Container>
     )
   }
-  render() {
+  render1() {
     if (this.props.loading) {
       return (
         <View style={styles.activityIndicatorContainer}>
@@ -117,19 +160,42 @@ class TodosScreen extends React.Component {
       );
     } else {
       return (
-        // <View style={styles.container}>
-        <View style={{ flex: 1, backgroundColor: '#F5F5F5', paddingTop: 20 }}>
-          <FlatList
-                ref='listRef'
-                data={this.props.todos}
-                renderItem={this.renderItem}
-                keyExtractor={(item, index) => `${index}`} />
+        <View style={styles.container}>
+          <View >
+            <TextInput style={{
+              height: 40,
+              width: 200,
+              margin: 10,
+              padding: 10
+            }}
+            
+            keyboardType = 'default'
+            placeholder = 'Enter new todo'
+            onChangeText = {
+              (text) => {
+                this.setState({title: text});
+              }
+            }
+            value = {this.state.title}
+            >
+
+            </TextInput>
+            <Button onPress={() => this.addTodo()}>
+              <Icon name="add" />
+            </Button>
+          </View>
+          <View style={{ flex: 1, backgroundColor: '#F5F5F5', paddingTop: 20 }}>
+            <FlatList
+                  ref='listRef'
+                  data={this.props.todos}
+                  renderItem={this.renderItem}
+                  keyExtractor={(item, index) => `${index}`} />
+          </View>
         </View>
-        // </View>
       );
     }
   }
-  render1() {
+  render2() {
     return (
       <View style={styles.container}>
         <ScrollView
@@ -186,7 +252,7 @@ class TodosScreen extends React.Component {
   
 }
 
-TodosScreen.navigationOptions = {
+UsersScreen.navigationOptions = {
   header: null,
   title: 'app.json'
 };
@@ -196,14 +262,20 @@ const msp = (state) => ({
   todos: state.todos.todos
 })
 const mdp = (dispatch) => ({
-  fetchTodos: () => dispatch(fetchTodos())
+  fetchTodos: () => dispatch(fetchTodos()),
+  createTodo: (todo) => dispatch(createTodo(todo))
 })
-export default connect(msp, mdp)(TodosScreen);
+export default connect(msp, mdp)(UsersScreen);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  inputTextField: {
+    flex: 1,
+    backgroundColor: '#fff',
+    color: 'rgba(0,0,0,0.4)'
   },
   developmentModeText: {
     marginBottom: 20,

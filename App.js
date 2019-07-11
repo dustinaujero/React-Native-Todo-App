@@ -28,7 +28,8 @@ import AppNavigator from './navigation/AppNavigator';
 // if (!firebase.apps.length) {
 //   var FBdatabase = firebase.initializeApp(config);
 // }
-
+// import firebase from 'firebase';
+//   require('firebase/database');
 
 
 
@@ -38,7 +39,7 @@ export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
 
   window.store = store;
-  // window.database = FBdatabase;
+
 
   if (!isLoadingComplete && !props.skipLoadingScreen) {
     return (

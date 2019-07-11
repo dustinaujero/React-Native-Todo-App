@@ -1,7 +1,8 @@
 export const RECEIVE_TODOS = "RECEIVE_TODOS";
+export const RECEIVE_TODO = "RECEIVE_TODO";
+
 
 import Data from '../../assets/sample.json';
-// import database from '../config/firebase';
 
 export const receiveTodos = (todos) => (
     {
@@ -9,21 +10,64 @@ export const receiveTodos = (todos) => (
         todos
     }
 )
+export const receiveTodo = (todo) => (
+    {
+        type: RECEIVE_TODO,
+        todo
+    }
+)
+
+
+
+
+import firebase from 'firebase';
+require('firebase/database');
+var config = {
+    apiKey: "AIzaSyDHc0SEjzsL7bjcomU3xDeJacqlUIXHJkU",
+    authDomain: "todo-d1cc4.firebaseapp.com",
+    databaseURL: "https://todo-d1cc4.firebaseio.com",
+    projectId: "todo-d1cc4",
+    storageBucket: "todo-d1cc4.appspot.com",
+    messagingSenderId: "929181652003",
+    appId: "1:929181652003:web:d72f715162678db3"
+};
+if (!firebase.apps.length) {
+    firebase.initializeApp(config);
+}
+
+export const createTodo = (title) => (
+    dispatch => {
+        const that = this;
+        firebase.database().ref('Todos/').push({ title })
+            .then((data) => {
+                //success callback
+                console.log('data ', data)
+            }).catch((error) => {
+                //error callback
+                console.log('error ', error)
+            });
+            setTimeout(() => {
+                dispatch(receiveTodo({ title }));
+            }, 2000)
+        
+        }
+        
+)
 
 export const fetchTodos = () => (
     (dispatch) => {
-        // const scores = [];
-        // database.ref().orderByChild("score").limitToLast(3).on("value", function (snapshot) {
-        //     snapshot.forEach(function (childSnapshot) {
-        //         const name = childSnapshot.val().name;
-        //         const score = childSnapshot.val().score;
-        //         scores.push({ name, score });
-        //     });
-        // })
+        const todos = [];
+        firebase.database().ref("Todos/").on("value", function (snapshot) {
+            snapshot.forEach(function (childSnapshot) {
+                const title = childSnapshot.val().title;
+                const description = childSnapshot.val().description;
+                todos.push({ title, description });
+            });
+        })
+        // dispatch(receiveTodos(todos));
         setTimeout(() => {
-            const data = Data.instructions;
-            dispatch(receiveTodos(data));
-            // dispatch(receiveTodos(scores))
+            // const data = Data.instructions;
+            dispatch(receiveTodos(todos));
         }, 2000)
     }
 )
