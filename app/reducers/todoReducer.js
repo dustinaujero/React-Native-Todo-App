@@ -6,7 +6,6 @@ let nullState = { todos: [], loading: true };
 
 export default todoReducer = (state = nullState, action) => {
     Object.freeze(state);
-    debugger
     switch (action.type) {
         case RECEIVE_TODOS: {
             return Object.assign({}, { todos: action.todos, loading: false });

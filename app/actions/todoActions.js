@@ -46,9 +46,9 @@ export const createTodo = (title) => (
                 //error callback
                 console.log('error ', error)
             });
-            setTimeout(() => {
-                dispatch(receiveTodo({ title }));
-            }, 2000)
+            // setTimeout(() => {
+            //     dispatch(receiveTodo({ title }));
+            // }, 2000)
         
         }
         

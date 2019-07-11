@@ -14,7 +14,8 @@ import {
   TouchableOpacity,
   View,
   StatusBar,
-  ListView
+  ListView,
+  Keyboard
 } from 'react-native';
 import {
   Container, 
@@ -84,6 +85,8 @@ class UsersScreen extends React.Component {
   addTodo() {
     if (this.state.title.length >= 1) {
       this.props.createTodo(this.state.title);
+      this.setState({title: ""});
+      Keyboard.dismiss();
     }
   }
   renderItem({ item, index }) {
